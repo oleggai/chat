@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <title>Title</title>
+</head>
+<body>
+
+<h3>Добро пожаловать в чат</h3>
+
+<form id="chat_form">
+    <input type="text" name="message">
+    <input type="submit" value="Отправить">
+</form>
+
+<ul id="chat_messages"></ul>
+<script>
+    $(document).ready(function() {
+
+        $('#chat_form').submit(function() {
+            var messageVal = $('[name="message"]').val();
+
+            if(messageVal !== '') {
+                publish(messageVal);
+            } else {
+                alert('Empty Message');
+            }
+
+            return false;
+        });
+
+        subscribe();
+    });
+
+    function publish(messageVal) {
+        var data = {
+            "message": messageVal
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/publish',
+            data: JSON.stringify(data),
+            error: function(error) {
+                alert(error.responseText);
+                console.log(error);
+            },
+            success: function(response) {
+
+            }
+        });
+    }
+
+    function subscribe() {
+        $.ajax({
+            type: 'POST',
+            url: '/subscribe',
+
+            success: function(response) {
+                console.log(response);
+                $('ul').append("<li>"+ response +"</li>");
+
+                subscribe();
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>
